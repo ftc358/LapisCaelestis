@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.TelemetryUtil;
 
 import java.util.Map;
 
-public class FoundationGrabber extends Subsystem {
+public class FoundationGrabber implements Subsystem {
 
     private Servo servo;
 

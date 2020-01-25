@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.TelemetryUtil;
 
 import java.util.Map;
 
-public class CapstoneFeeder extends Subsystem {
+public class CapstoneFeeder implements Subsystem {
 
     private Servo servo;
 

@@ -11,9 +11,9 @@ import java.util.Map;
  */
 
 
- public abstract class Subsystem {
+public interface Subsystem {
     /**
      * Run control code and return telemetry.
      */
-    public abstract Map<String, Object> update(@Nullable Canvas fieldOverlay);
+    Map<String, Object> update(@Nullable Canvas fieldOverlay);
  }

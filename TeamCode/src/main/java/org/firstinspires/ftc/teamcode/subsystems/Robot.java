@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 
     public FtcDashboard dashboard;
 
+    public SampleMecanumDriveREVOptimized drive;
     public FoundationGrabber foundationGrabber;
     public CapstoneFeeder capstoneFeeder;
 
@@ -53,8 +55,9 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
                 for (Subsystem subsystem : subsystems) {
                     if (subsystem == null) continue;
                     try {
-                        Map<String, Object> telemetry = subsystem.update(telemetryPacket.fieldOverlay());
-                        telemetryPacket.putAll(telemetry);
+//                        Map<String, Object> telemetry = subsystem.update(telemetryPacket.fieldOverlay());
+//                        telemetryPacket.putAll(telemetry);
+                        subsystem.update(null);
                         synchronized (subsystemsWithProblems) {
                             if (subsystemsWithProblems.contains(subsystem)) {
                                 subsystemsWithProblems.remove(subsystem);
@@ -132,6 +135,13 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
             subsystems.add(capstoneFeeder);
         } catch (IllegalArgumentException e) {
             Log.w(TAG, "skipping capstone feeder");
+        }
+
+        try {
+            drive = new SampleMecanumDriveREVOptimized(opMode.hardwareMap);
+            subsystems.add(drive);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "skipping drive");
         }
 
         Activity activity = (Activity) opMode.hardwareMap.appContext;
