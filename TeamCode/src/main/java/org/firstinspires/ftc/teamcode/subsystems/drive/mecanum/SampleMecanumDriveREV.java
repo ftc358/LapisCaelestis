@@ -1,42 +1,38 @@
-package org.firstinspires.ftc.teamcode.drive.mecanum;
+package org.firstinspires.ftc.teamcode.subsystems.drive.mecanum;
 
 import android.support.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
+import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.getMotorVelocityF;
 
 /*
- * Simple mecanum drive hardware implementation for Modern Robotics hardware.
+ * Simple mecanum drive hardware implementation for REV hardware. If your hardware configuration
+ * satisfies the requirements, SampleMecanumDriveREVOptimized is highly recommended.
  */
-public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
-    /*
-     * As you may know, the MR communication system is implemented asynchronously. Thus, all
-     * hardware calls return immediately (reads are cached and writes are queued). To ensure that
-     * Road Runner isn't needlessly running on stale data (this is actually harmful), we delay after
-     * each call to setMotorPowers() with the hope that, in most cases, new data will be available
-     * by the next iteration (though this can never be guaranteed). Although it may seem attractive
-     * to decrease this number and increase your control loop frequency, do so at your own risk.
-     */
-    private static final int MOTOR_WRITE_DELAY = 20;
-
-    private DcMotor leftFront, leftRear, rightRear, rightFront;
-    private List<DcMotor> motors;
+public class SampleMecanumDriveREV extends SampleMecanumDriveBase {
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private List<DcMotorEx> motors;
     private BNO055IMU imu;
 
-    public SampleMecanumDriveMR(HardwareMap hardwareMap) {
+    public SampleMecanumDriveREV(HardwareMap hardwareMap) {
         super();
+
+        LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -48,14 +44,14 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
-        leftFront = hardwareMap.dcMotor.get("leftFront");
-        leftRear = hardwareMap.dcMotor.get("leftRear");
-        rightRear = hardwareMap.dcMotor.get("rightRear");
-        rightFront = hardwareMap.dcMotor.get("rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
-        for (DcMotor motor : motors) {
+        for (DcMotorEx motor : motors) {
             if (RUN_USING_ENCODER) {
                 motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
@@ -74,17 +70,15 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
 
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {
-        ModernRoboticsUsbDcMotorController controller = (ModernRoboticsUsbDcMotorController) leftFront.getController();
-        DifferentialControlLoopCoefficients coefficients = controller.getDifferentialControlLoopCoefficients(leftFront.getPortNumber());
+        PIDFCoefficients coefficients = leftFront.getPIDFCoefficients(runMode);
         return new PIDCoefficients(coefficients.p, coefficients.i, coefficients.d);
     }
 
     @Override
     public void setPIDCoefficients(DcMotor.RunMode runMode, PIDCoefficients coefficients) {
-        for (DcMotor motor : motors) {
-            ModernRoboticsUsbDcMotorController controller = (ModernRoboticsUsbDcMotorController) motor.getController();
-            controller.setDifferentialControlLoopCoefficients(motor.getPortNumber(), new DifferentialControlLoopCoefficients(
-                    coefficients.kP, coefficients.kI, coefficients.kD
+        for (DcMotorEx motor : motors) {
+            motor.setPIDFCoefficients(runMode, new PIDFCoefficients(
+                    coefficients.kP, coefficients.kI, coefficients.kD, getMotorVelocityF()
             ));
         }
     }
@@ -93,10 +87,19 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
     @Override
     public List<Double> getWheelPositions() {
         List<Double> wheelPositions = new ArrayList<>();
-        for (DcMotor motor : motors) {
+        for (DcMotorEx motor : motors) {
             wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
         }
         return wheelPositions;
+    }
+
+    @Override
+    public List<Double> getWheelVelocities() {
+        List<Double> wheelVelocities = new ArrayList<>();
+        for (DcMotorEx motor : motors) {
+            wheelVelocities.add(encoderTicksToInches(motor.getVelocity()));
+        }
+        return wheelVelocities;
     }
 
     @Override
@@ -105,12 +108,6 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
         leftRear.setPower(v1);
         rightRear.setPower(v2);
         rightFront.setPower(v3);
-
-        try {
-            Thread.sleep(MOTOR_WRITE_DELAY);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
     }
 
     @Override

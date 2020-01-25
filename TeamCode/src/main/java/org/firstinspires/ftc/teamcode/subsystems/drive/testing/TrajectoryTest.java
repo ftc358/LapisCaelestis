@@ -1,15 +1,10 @@
-package org.firstinspires.ftc.teamcode.drive.opmode.testing;
+package org.firstinspires.ftc.teamcode.subsystems.drive.opmode.testing;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryLoader;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.AssetsTrajectoryLoader;
-
-import java.io.IOException;
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
 
 @Autonomous(group = "drive")
 public class TrajectoryTest extends LinearOpMode {

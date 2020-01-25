@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode.testing;
+package org.firstinspires.ftc.teamcode.subsystems.drive.testing;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -6,9 +6,12 @@ import android.util.Log;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
@@ -26,20 +29,33 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * This is a simple teleop routine for testing localization. Drive the robot around like a normal
+ * teleop routine and make sure the robot's estimated pose matches the robot's actual pose (slight
+ * errors are not out of the ordinary, especially with sudden drive motions). The goal of this
+ * exercise is to ascertain whether the localizer has been configured properly (note: the pure
+ * encoder localizer heading may be significantly off if the track width has not been tuned).
+ */
 @Config
-@TeleOp
-public class CameraTest extends LinearOpMode {
+@TeleOp(group = "drive")
+public class LocalizationTestWithCamera extends LinearOpMode {
 
     final private static int frameHeight = 320;
     final private static int frameWidth = 240;
 
-    public static int fromBottom = 5;
-    public static int stoneHeight = 40;
+    public static int fromBottom = 20;
+    public static int stoneHeight = 60;
+
+    Servo foundationGrabber;
+    Servo grabberWrist;
+    Servo grabberHand;
+
+    double foundationGrabberState;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
     OpenCvCamera phoneCam;
-    SamplePipeline samplePipeline;
+    SamplePipeline pipeline;
 
     // comment out later
     Bitmap bmp = null;
@@ -53,29 +69,61 @@ public class CameraTest extends LinearOpMode {
     };
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        grabberWrist = hardwareMap.servo.get("grabberWrist");
+        grabberHand = hardwareMap.servo.get("grabberHand");
+        foundationGrabber = hardwareMap.servo.get("foundationGrabber");
+
+        grabberWrist.setPosition(0.7);
+        grabberHand.setPosition(0);
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        SampleMecanumDriveREVOptimized drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
 
         phoneCam.openCameraDevice();
-        samplePipeline = new SamplePipeline();
-        phoneCam.setPipeline(samplePipeline);
+        pipeline = new SamplePipeline();
+        phoneCam.setPipeline(pipeline);
 
         // comment out later
         ExecutorService networking = Executors.newSingleThreadExecutor();
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         phoneCam.startStreaming(frameHeight, frameWidth, OpenCvCameraRotation.UPRIGHT);
 
         waitForStart();
 
-        while (opModeIsActive()) {
-            // comment out later
-            networking.submit(submitImage);
+        while (!isStopRequested()) {
+            drive.setDrivePower(new Pose2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x
+            ));
 
-            telemetry.addData("skystonePosition", samplePipeline.getPosition());
+            drive.update(null);
+
+            if (gamepad1.left_bumper) {
+                foundationGrabberState = 0;
+            } else if (gamepad1.right_bumper) {
+                foundationGrabberState = 1;
+            }
+
+            foundationGrabber.setPosition(foundationGrabberState);
+
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("skystonePosition", pipeline.getPosition());
             telemetry.update();
+
+            networking.submit(submitImage);
         }
     }
 

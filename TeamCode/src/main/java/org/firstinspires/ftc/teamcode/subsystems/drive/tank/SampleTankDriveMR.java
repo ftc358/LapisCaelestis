@@ -1,36 +1,39 @@
-package org.firstinspires.ftc.teamcode.drive.tank;
+package org.firstinspires.ftc.teamcode.subsystems.drive.tank;
 
 import android.support.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
-import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
+import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.getMotorVelocityF;
-
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.encoderTicksToInches;
 /*
- * Simple tank drive hardware implementation for REV hardware. If your hardware configuration
- * satisfies the requirements, SampleTankDriveREVOptimized is highly recommended.
+ * Simple tank drive hardware implementation for Modern Robotics hardware.
  */
-public class SampleTankDriveREV extends SampleTankDriveBase {
-    private List<DcMotorEx> motors, leftMotors, rightMotors;
+public class SampleTankDriveMR extends SampleTankDriveBase {
+    /*
+     * As you may know, the MR communication system is implemented asynchronously. Thus, all
+     * hardware calls return immediately (reads are cached and writes are queued). To ensure that
+     * Road Runner isn't needlessly running on stale data (this is actually harmful), we delay after
+     * each call to setMotorPowers() with the hope that, in most cases, new data will be available
+     * by the next iteration (though this can never be guaranteed). Although it may seem attractive
+     * to decrease this number and increase your control loop frequency, do so at your own risk.
+     */
+    private static final int MOTOR_WRITE_DELAY = 20;
+
+    private List<DcMotor> motors, leftMotors, rightMotors;
     private BNO055IMU imu;
 
-    public SampleTankDriveREV(HardwareMap hardwareMap) {
+    public SampleTankDriveMR(HardwareMap hardwareMap) {
         super();
-
-        LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -43,16 +46,16 @@ public class SampleTankDriveREV extends SampleTankDriveBase {
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
         // add/remove motors depending on your robot (e.g., 6WD)
-        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        DcMotorEx leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        DcMotorEx rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        DcMotor leftFront = hardwareMap.dcMotor.get("leftFront");
+        DcMotor leftRear = hardwareMap.dcMotor.get("leftRear");
+        DcMotor rightRear = hardwareMap.dcMotor.get("rightRear");
+        DcMotor rightFront = hardwareMap.dcMotor.get("rightFront");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         leftMotors = Arrays.asList(leftFront, leftRear);
         rightMotors = Arrays.asList(rightFront, rightRear);
 
-        for (DcMotorEx motor : motors) {
+        for (DcMotor motor : motors) {
             if (RUN_USING_ENCODER) {
                 motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
@@ -71,15 +74,18 @@ public class SampleTankDriveREV extends SampleTankDriveBase {
 
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {
-        PIDFCoefficients coefficients = leftMotors.get(0).getPIDFCoefficients(runMode);
+        DcMotor leftFirst = leftMotors.get(0);
+        ModernRoboticsUsbDcMotorController controller = (ModernRoboticsUsbDcMotorController) leftFirst.getController();
+        DifferentialControlLoopCoefficients coefficients = controller.getDifferentialControlLoopCoefficients(leftFirst.getPortNumber());
         return new PIDCoefficients(coefficients.p, coefficients.i, coefficients.d);
     }
 
     @Override
     public void setPIDCoefficients(DcMotor.RunMode runMode, PIDCoefficients coefficients) {
-        for (DcMotorEx motor : motors) {
-            motor.setPIDFCoefficients(runMode, new PIDFCoefficients(
-                    coefficients.kP, coefficients.kI, coefficients.kD, getMotorVelocityF()
+        for (DcMotor motor : motors) {
+            ModernRoboticsUsbDcMotorController controller = (ModernRoboticsUsbDcMotorController) motor.getController();
+            controller.setDifferentialControlLoopCoefficients(motor.getPortNumber(), new DifferentialControlLoopCoefficients(
+                    coefficients.kP, coefficients.kI, coefficients.kD
             ));
         }
     }
@@ -88,34 +94,28 @@ public class SampleTankDriveREV extends SampleTankDriveBase {
     @Override
     public List<Double> getWheelPositions() {
         double leftSum = 0, rightSum = 0;
-        for (DcMotorEx leftMotor : leftMotors) {
+        for (DcMotor leftMotor : leftMotors) {
             leftSum += encoderTicksToInches(leftMotor.getCurrentPosition());
         }
-        for (DcMotorEx rightMotor : rightMotors) {
+        for (DcMotor rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
         return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
     }
 
     @Override
-    public List<Double> getWheelVelocities() {
-        double leftSum = 0, rightSum = 0;
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftSum += encoderTicksToInches(leftMotor.getVelocity());
-        }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightSum += encoderTicksToInches(rightMotor.getVelocity());
-        }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
-    }
-
-    @Override
     public void setMotorPowers(double v, double v1) {
-        for (DcMotorEx leftMotor : leftMotors) {
+        for (DcMotor leftMotor : leftMotors) {
             leftMotor.setPower(v);
         }
-        for (DcMotorEx rightMotor : rightMotors) {
+        for (DcMotor rightMotor : rightMotors) {
             rightMotor.setPower(v1);
+        }
+
+        try {
+            Thread.sleep(MOTOR_WRITE_DELAY);
+        } catch (InterruptedException e) {
+            // do nothing
         }
     }
 
