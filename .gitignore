@@ -1,6 +1,5 @@
 # Built application files
 *.apk
-*.aar
 *.ap_
 *.aab
 
@@ -45,6 +44,7 @@ captures/
 .idea/assetWizardSettings.xml
 .idea/dictionaries
 .idea/libraries
+
 # Android Studio 3 in .gitignore file.
 .idea/caches
 .idea/modules.xml
@@ -84,7 +84,7 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-#
+
 # macOS
 *.DS_Store
 .DS_Store
