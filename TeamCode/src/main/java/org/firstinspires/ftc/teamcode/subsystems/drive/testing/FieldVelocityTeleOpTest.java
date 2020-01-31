@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.drive.opmode.testing;
+package org.firstinspires.ftc.teamcode.subsystems.drive.testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
 
-import static org.firstinspires.ftc.teamcode.subsystems.drive.opmode.testing.FieldVelocityTeleOpTest.CONTROL_MODE.ABSOLUTE;
-import static org.firstinspires.ftc.teamcode.subsystems.drive.opmode.testing.FieldVelocityTeleOpTest.CONTROL_MODE.RELATIVE;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.testing.FieldVelocityTeleOpTest.CONTROL_MODE.ABSOLUTE;
+import static org.firstinspires.ftc.teamcode.subsystems.drive.testing.FieldVelocityTeleOpTest.CONTROL_MODE.RELATIVE;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
