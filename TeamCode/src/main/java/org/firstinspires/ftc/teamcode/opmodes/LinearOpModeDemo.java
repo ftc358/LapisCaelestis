@@ -30,20 +30,24 @@ public class LinearOpModeDemo extends LinearOpMode {
                 .forward(20)
                 .build();
 
-        while (!isStopRequested()) {
-            telemetry.addData("drive mode", robot.drive.mode);
-            telemetry.addData("currentPose", robot.drive.getPoseEstimate());
-            telemetry.addData("trajectory", testTrajectory);
-            robot.drive.followTrajectorySync(testTrajectory);
-            telemetry.addData("drive signal", robot.drive.debug);
-            telemetry.addData("isFollowing", robot.drive.follower.isFollowing());
-            telemetry.addData("motor1", robot.drive.leftFront.getPower());
-            telemetry.addData("motor2", robot.drive.rightFront.getPower());
-            telemetry.addData("motor3", robot.drive.leftRear.getPower());
-            telemetry.addData("motor4", robot.drive.rightRear.getPower());
-            telemetry.update();
-            robot.foundationGrabber.setServoPosition(gamepad1.left_trigger);
-            robot.capstoneFeeder.setServoPosition(0.95 - gamepad1.right_trigger);
-        }
+//            telemetry.addData("drive mode", robot.drive.mode);
+//            telemetry.addData("currentPose", robot.drive.getPoseEstimate());
+//            telemetry.addData("trajectory", testTrajectory);
+        robot.drive.followTrajectory(testTrajectory);
+
+//            telemetry.addData("drive signal", robot.drive.debug);
+//            telemetry.addData("isFollowing", robot.drive.follower.isFollowing());
+//            telemetry.addData("motor1", robot.drive.leftFront.getPower());
+//            telemetry.addData("motor2", robot.drive.rightFront.getPower());
+//            telemetry.addData("motor3", robot.drive.leftRear.getPower());
+//            telemetry.addData("motor4", robot.drive.rightRear.getPower());
+//            telemetry.update();
+        robot.foundationGrabber.setServoPosition(0.5);
+        Thread.sleep(500);
+        robot.foundationGrabber.setServoPosition(1);
+        Thread.sleep(500);
+        robot.foundationGrabber.setServoPosition(0.5);
+        Thread.sleep(500);
+        robot.drive.waitForIdle();
     }
 }
