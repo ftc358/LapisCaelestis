@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.util.StickyGamepad;
 
@@ -27,13 +28,7 @@ public class Demo extends OpMode {
     @Override
     public void loop() {
         stickyGamepad.update();
-
-        robot.foundationGrabber.setServoPosition(gamepad1.left_trigger);
-        robot.capstoneFeeder.setServoPosition(0.95 - gamepad1.right_trigger);
-        robot.drive.setDrivePower(new Pose2d(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x
-        ));
+        robot.intake.setPower(Math.max(gamepad1.left_trigger, gamepad1.right_trigger),
+                gamepad1.left_trigger > gamepad1.right_trigger ? Intake.IntakeMode.INTAKE : Intake.IntakeMode.OUTTAKE);
     }
 }
