@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems.drive;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
-import com.qualcomm.hardware.motors.RevRobotics40HdHexMotor;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 /*
  * Constants shared between multiple drive types.
@@ -34,7 +32,7 @@ public class DriveConstants {
      * MOTOR_VELO_PID with the tuned coefficients from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(4.00, 0.2, 0.001);
+    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0, 0.0, 0.0);
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -67,8 +65,8 @@ public class DriveConstants {
      * forces acceleration-limited profiling).
      */
     public static DriveConstraints BASE_CONSTRAINTS = new DriveConstraints(
-            20.0, 30.0, 0,
-            1.6, 1.6, 0.0
+            30.0, 30.0, 0,
+            Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     );
 
 
