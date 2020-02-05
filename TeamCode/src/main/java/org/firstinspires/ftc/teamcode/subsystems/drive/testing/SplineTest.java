@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.drive.opmode.testing;
+package org.firstinspires.ftc.teamcode.subsystems.drive.testing;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;

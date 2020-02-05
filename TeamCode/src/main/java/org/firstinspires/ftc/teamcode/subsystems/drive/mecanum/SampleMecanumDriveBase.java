@@ -21,7 +21,6 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TelemetryUtil;
 
 import java.util.ArrayList;
@@ -107,7 +106,7 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
 
     public void turnSync(double angle) {
         turn(angle);
-        waitForIdle();
+        updateUntilIdle();
     }
 
     public void followTrajectory(Trajectory trajectory) {
@@ -117,7 +116,7 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
 
     public void followTrajectorySync(Trajectory trajectory) {
         followTrajectory(trajectory);
-        waitForIdle();
+        updateUntilIdle();
     }
 
     public Pose2d getLastError() {
@@ -176,7 +175,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
                 break;
             }
             case FOLLOW_TRAJECTORY: {
-                debug = follower.update(currentPose);
                 setDriveSignal(follower.update(currentPose));
 
 //                Trajectory trajectory = follower.getTrajectory();
@@ -203,9 +201,19 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
         return TelemetryUtil.objectToMap(telemetryData);
     }
 
-    public void waitForIdle() {
+    public void updateUntilIdle() {
         while (!Thread.currentThread().isInterrupted() && isBusy()) {
             update(null);
+        }
+    }
+
+    public void waitForIdle() {
+        while (!Thread.currentThread().isInterrupted() && isBusy()) {
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

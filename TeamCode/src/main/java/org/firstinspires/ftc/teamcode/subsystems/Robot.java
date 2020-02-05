@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.openftc.revextensions2.ExpansionHubEx;
+import org.openftc.revextensions2.RevBulkData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,14 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 
     public FtcDashboard dashboard;
 
-    public SampleMecanumDriveREVOptimized drive;
-    public FoundationGrabber foundationGrabber;
-    public CapstoneFeeder capstoneFeeder;
+    ExpansionHubEx expansionHubA;
+    ExpansionHubEx expansionHubB;
+
+    public RevBulkData expansionHubAData;
+    public RevBulkData expansionHubBData;
+
+//    public SampleMecanumDriveREVOptimized drive;
+    public Intake intake;
 
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
@@ -51,12 +58,12 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         while (!Thread.currentThread().isInterrupted()) {
             TelemetryPacket telemetryPacket = new TelemetryPacket();
             try {
-                double startTimestamp = System.nanoTime() / Math.pow(10, 9);
+//                double startTimestamp = System.nanoTime() / Math.pow(10, 9);
                 for (Subsystem subsystem : subsystems) {
                     if (subsystem == null) continue;
                     try {
-//                        Map<String, Object> telemetry = subsystem.update(telemetryPacket.fieldOverlay());
-//                        telemetryPacket.putAll(telemetry);
+                        Map<String, Object> telemetry = subsystem.update(telemetryPacket.fieldOverlay());
+                        telemetryPacket.putAll(telemetry);
                         subsystem.update(null);
                         synchronized (subsystemsWithProblems) {
                             if (subsystemsWithProblems.contains(subsystem)) {
@@ -76,7 +83,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
                 for (Listener listener : listeners) {
                     listener.onPostUpdate();
                 }
-                double postSubsystemUpdateTimestamp = System.nanoTime() / Math.pow(10, 9);
+//                double postSubsystemUpdateTimestamp = System.nanoTime() / Math.pow(10, 9);
                 while (telemetryPacketQueue.remainingCapacity() == 0) {
                     Thread.sleep(1);
                 }
@@ -117,32 +124,27 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 
         listeners = new ArrayList<>();
 
-//        File logRoot = LoggingUtil.getLogFile();
+        expansionHubA = opMode.hardwareMap.get(ExpansionHubEx.class, "Expansion Hub A");
+        expansionHubB = opMode.hardwareMap.get(ExpansionHubEx.class, "Expansion Hub B");
 
-//        robotLog = new CSVWriter(new File(logRoot, "Robot.csv"));
+        expansionHubAData = expansionHubA.getBulkInputData();
+        expansionHubBData = expansionHubB.getBulkInputData();
 
         subsystems = new ArrayList<>();
 
         try {
-            foundationGrabber = new FoundationGrabber(opMode.hardwareMap);
-            subsystems.add(foundationGrabber);
+            intake = new Intake(opMode.hardwareMap);
+            subsystems.add(intake);
         } catch (IllegalArgumentException e) {
-            Log.w(TAG, "skipping foundation grabber");
+            Log.w(TAG, "skipping intake");
         }
 
-        try {
-            capstoneFeeder = new CapstoneFeeder(opMode.hardwareMap);
-            subsystems.add(capstoneFeeder);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "skipping capstone feeder");
-        }
-
-        try {
-            drive = new SampleMecanumDriveREVOptimized(opMode.hardwareMap);
-            subsystems.add(drive);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "skipping drive");
-        }
+//        try {
+//            drive = new SampleMecanumDriveREVOptimized(opMode.hardwareMap);
+//            subsystems.add(drive);
+//        } catch (IllegalArgumentException e) {
+//            Log.w(TAG, "skipping drive");
+//        }
 
         Activity activity = (Activity) opMode.hardwareMap.appContext;
         opModeManager = OpModeManagerImpl.getOpModeManagerOfActivity(activity);

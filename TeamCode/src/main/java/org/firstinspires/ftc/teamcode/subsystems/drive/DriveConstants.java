@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems.drive;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
-import com.qualcomm.hardware.motors.RevRobotics40HdHexMotor;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 /*
  * Constants shared between multiple drive types.
@@ -26,18 +24,15 @@ public class DriveConstants {
      * discrepancies. Additional motor types can be defined via an interface with the
      * @DeviceProperties and @MotorType annotations.
      */
-    private static final MotorConfigurationType MOTOR_CONFIG =
-            MotorConfigurationType.getMotorType(RevRobotics40HdHexMotor.class);
+//    private static final MotorConfigurationType MOTOR_CONFIG =
+//            MotorConfigurationType.getMotorType(RevRobotics40HdHexMotor.class);
 
     /*
      * Set the first flag appropriately. If using the built-in motor velocity PID, update
      * MOTOR_VELO_PID with the tuned coefficients from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    //        public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(5.7,0.001,0.9);
-    //    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(30, 6.5, 0.1);
-//    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(25, 10, 0.1);
-    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(4.00, 0.2, 0.001);
+    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0, 0.0, 0.0);
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -48,9 +43,8 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 2.0;
-    public static double GEAR_RATIO = 1.0 / 1.0; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 14.11;
-    // measured value 18.46
+    public static double GEAR_RATIO = 24.0 / 42.0; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 14.84;
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -71,13 +65,14 @@ public class DriveConstants {
      * forces acceleration-limited profiling).
      */
     public static DriveConstraints BASE_CONSTRAINTS = new DriveConstraints(
-            20.0, 30.0, 0,
-            1.6, 1.6, 0.0
+            30.0, 30.0, 0,
+            Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     );
 
 
     public static double encoderTicksToInches(double ticks) {
-        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / MOTOR_CONFIG.getTicksPerRev();
+        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / 293;
+        // 293: calculated & experimentally confirmed
     }
 
     public static double rpmToVelocity(double rpm) {
@@ -85,14 +80,20 @@ public class DriveConstants {
     }
 
     public static double getMaxRpm() {
-        return MOTOR_CONFIG.getMaxRPM() *
-                (RUN_USING_ENCODER ? MOTOR_CONFIG.getAchieveableMaxRPMFraction() : 1.0);
+//        return MOTOR_CONFIG.getMaxRPM() *
+//                (RUN_USING_ENCODER ? MOTOR_CONFIG.getAchieveableMaxRPMFraction() : 1.0);
+        // internal gear ratio: 304/29
+        // 6000: http://www.revrobotics.com/rev-41-1301/
+        // default AchieveableMaxRPMFraction: 0.85
+//        return 6000.0 / (304.0 / 29.0) * 0.85;
+        return 486;
     }
 
     public static double getTicksPerSec() {
         // note: MotorConfigurationType#getAchieveableMaxTicksPerSecond() isn't quite what we want
-        return (MOTOR_CONFIG.getMaxRPM() * MOTOR_CONFIG.getTicksPerRev() / 60.0);
-        // 2800
+//        return (MOTOR_CONFIG.getMaxRPM() * MOTOR_CONFIG.getTicksPerRev() / 60.0);
+//        return 6000.0 / (304.0 / 29.0) * 293 / 60.0;
+        return 2795;
     }
 
     public static double getMotorVelocityF() {

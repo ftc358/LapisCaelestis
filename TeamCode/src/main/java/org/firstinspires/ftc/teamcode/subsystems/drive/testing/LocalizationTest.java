@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.drive.opmode.testing;
+package org.firstinspires.ftc.teamcode.subsystems.drive.testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
