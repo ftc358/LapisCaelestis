@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp
-public class limitSwitch extends LinearOpMode {
+public class LimitSwitch extends LinearOpMode {
 
     private DigitalChannel switch1;
     private DigitalChannel switch2;
