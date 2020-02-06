@@ -9,6 +9,8 @@ public class LiftConstants {
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(5.0, 0.0, 0.0);
     public static PIDCoefficients LIFT_CONTROLLER_PID = new PIDCoefficients(5.0, 0.0, 0.0);
 
+    public static double MAX_ADMISSIBLE_ERROR = 0.5;
+
     public static final double MAX_VEL = 10.0;
     public static final double MAX_ACC = 20.0;
     public static final double MAX_JERK = 0;
