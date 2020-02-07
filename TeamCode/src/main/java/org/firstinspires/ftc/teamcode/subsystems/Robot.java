@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.subsystems.lift.Lift;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.RevBulkData;
 
@@ -33,11 +34,12 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     ExpansionHubEx expansionHubA;
     ExpansionHubEx expansionHubB;
 
-    public RevBulkData expansionHubAData;
-    public RevBulkData expansionHubBData;
+    public static RevBulkData expansionHubAData;
+    public static RevBulkData expansionHubBData;
 
 //    public SampleMecanumDriveREVOptimized drive;
-    public Intake intake;
+//    public Intake intake;
+    public Lift lift;
 
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
@@ -62,6 +64,8 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
                 for (Subsystem subsystem : subsystems) {
                     if (subsystem == null) continue;
                     try {
+                        expansionHubAData = expansionHubA.getBulkInputData();
+                        expansionHubBData = expansionHubB.getBulkInputData();
                         Map<String, Object> telemetry = subsystem.update(telemetryPacket.fieldOverlay());
                         telemetryPacket.putAll(telemetry);
                         subsystem.update(null);
@@ -127,17 +131,14 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         expansionHubA = opMode.hardwareMap.get(ExpansionHubEx.class, "Expansion Hub A");
         expansionHubB = opMode.hardwareMap.get(ExpansionHubEx.class, "Expansion Hub B");
 
-        expansionHubAData = expansionHubA.getBulkInputData();
-        expansionHubBData = expansionHubB.getBulkInputData();
-
         subsystems = new ArrayList<>();
 
-        try {
-            intake = new Intake(opMode.hardwareMap);
-            subsystems.add(intake);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "skipping intake");
-        }
+//        try {
+//            intake = new Intake(opMode.hardwareMap);
+//            subsystems.add(intake);
+//        } catch (IllegalArgumentException e) {
+//            Log.w(TAG, "skipping intake");
+//        }
 
 //        try {
 //            drive = new SampleMecanumDriveREVOptimized(opMode.hardwareMap);
@@ -145,6 +146,13 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 //        } catch (IllegalArgumentException e) {
 //            Log.w(TAG, "skipping drive");
 //        }
+
+        try {
+            lift = new Lift(opMode.hardwareMap);
+            subsystems.add(lift);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "skipping lift");
+        }
 
         Activity activity = (Activity) opMode.hardwareMap.appContext;
         opModeManager = OpModeManagerImpl.getOpModeManagerOfActivity(activity);

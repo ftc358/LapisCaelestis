@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
 
 /**
@@ -58,9 +59,13 @@ public class LocalizationTest extends LinearOpMode {
             drive.update(null);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
+            StandardTrackingWheelLocalizer localizer = (StandardTrackingWheelLocalizer) drive.getLocalizer();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("leftEncoder", localizer.getWheelPositions().get(0));
+            telemetry.addData("rightEncoder", localizer.getWheelPositions().get(1));
+            telemetry.addData("backEncoder", localizer.getWheelPositions().get(2));
             telemetry.update();
         }
     }
