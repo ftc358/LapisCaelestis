@@ -5,14 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ThreadPool;
 
-import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 
 import java.util.concurrent.ExecutorService;
 
 @TeleOp
 public class MinimalFollowTrajectoryDemo extends LinearOpMode {
 
-    SampleMecanumDriveREVOptimized drive;
+    MecanumDriveREVOptimized drive;
     private ExecutorService driveUpdateExecutor;
     private Runnable driveUpdateRunnable = () -> {
         while (!Thread.currentThread().isInterrupted()) {
@@ -23,7 +23,7 @@ public class MinimalFollowTrajectoryDemo extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         driveUpdateExecutor = ThreadPool.newSingleThreadExecutor("drive update");
-        drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive = new MecanumDriveREVOptimized(hardwareMap);
         waitForStart();
         driveUpdateExecutor.submit(driveUpdateRunnable);
 

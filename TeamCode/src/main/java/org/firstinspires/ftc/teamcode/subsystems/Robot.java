@@ -12,8 +12,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
-import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.subsystems.lift.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.RevBulkData;
 
@@ -31,15 +30,13 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 
     public FtcDashboard dashboard;
 
-    ExpansionHubEx expansionHubA;
-    ExpansionHubEx expansionHubB;
+    private ExpansionHubEx expansionHubA, expansionHubB;
 
-    public static RevBulkData expansionHubAData;
-    public static RevBulkData expansionHubBData;
+    public static RevBulkData expansionHubAData, expansionHubBData;
 
-//    public SampleMecanumDriveREVOptimized drive;
-//    public Intake intake;
-    public Lift lift;
+    public MecanumDriveREVOptimized drive;
+    public Intake intake;
+//    public Lift lift;
 
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
@@ -133,26 +130,26 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 
         subsystems = new ArrayList<>();
 
-//        try {
-//            intake = new Intake(opMode.hardwareMap);
-//            subsystems.add(intake);
-//        } catch (IllegalArgumentException e) {
-//            Log.w(TAG, "skipping intake");
-//        }
-
-//        try {
-//            drive = new SampleMecanumDriveREVOptimized(opMode.hardwareMap);
-//            subsystems.add(drive);
-//        } catch (IllegalArgumentException e) {
-//            Log.w(TAG, "skipping drive");
-//        }
+        try {
+            intake = new Intake(opMode.hardwareMap);
+            subsystems.add(intake);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "skipping intake");
+        }
 
         try {
-            lift = new Lift(opMode.hardwareMap);
-            subsystems.add(lift);
+            drive = new MecanumDriveREVOptimized(opMode.hardwareMap);
+            subsystems.add(drive);
         } catch (IllegalArgumentException e) {
-            Log.w(TAG, "skipping lift");
+            Log.w(TAG, "skipping drive");
         }
+
+//        try {
+//            lift = new Lift(opMode.hardwareMap);
+//            subsystems.add(lift);
+//        } catch (IllegalArgumentException e) {
+//            Log.w(TAG, "skipping lift");
+//        }
 
         Activity activity = (Activity) opMode.hardwareMap.appContext;
         opModeManager = OpModeManagerImpl.getOpModeManagerOfActivity(activity);

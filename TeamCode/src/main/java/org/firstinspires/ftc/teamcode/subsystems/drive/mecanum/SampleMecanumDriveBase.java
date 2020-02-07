@@ -21,6 +21,7 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
+import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TelemetryUtil;
 
 import java.util.ArrayList;
@@ -64,7 +65,6 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
 
     public DriveConstraints constraints;
     public TrajectoryFollower follower;
-    public DriveSignal debug;
 
     private List<Double> lastWheelPositions;
     private double lastTimestamp;
@@ -177,18 +177,18 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
             case FOLLOW_TRAJECTORY: {
                 setDriveSignal(follower.update(currentPose));
 
-//                Trajectory trajectory = follower.getTrajectory();
+                Trajectory trajectory = follower.getTrajectory();
 
-//                fieldOverlay.setStrokeWidth(1);
-//                fieldOverlay.setStroke("4CAF50");
-//                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.getPath());
-//
-//                fieldOverlay.setStroke("#F44336");
-//                double t = follower.elapsedTime();
-//                DashboardUtil.drawRobot(fieldOverlay, trajectory.get(t));
-//
-//                fieldOverlay.setStroke("#3F51B5");
-//                fieldOverlay.fillCircle(currentPose.getX(), currentPose.getY(), 3);
+                fieldOverlay.setStrokeWidth(1);
+                fieldOverlay.setStroke("4CAF50");
+                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.getPath());
+
+                fieldOverlay.setStroke("#F44336");
+                double t = follower.elapsedTime();
+                DashboardUtil.drawRobot(fieldOverlay, trajectory.get(t));
+
+                fieldOverlay.setStroke("#3F51B5");
+                fieldOverlay.fillCircle(currentPose.getX(), currentPose.getY(), 3);
 
                 if (!follower.isFollowing()) {
                     mode = Mode.IDLE;

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
@@ -30,13 +31,13 @@ import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.get
  * Optimized mecanum drive implementation for REV ExHs. The time savings may significantly improve
  * trajectory following performance with moderate additional complexity.
  */
-public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
+public class MecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    public ExpansionHubMotor leftFront, leftRear, rightRear, rightFront;
+    private ExpansionHubMotor leftFront, leftRear, rightRear, rightFront;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
-    public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
+    public MecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
@@ -44,7 +45,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         // TODO: adjust the names of the following hardware devices to match your configuration
         // for simplicity, we assume that the desired IMU and drive motors are on the same hub
         // if your motors are split between hubs, **you will need to add another bulk read**
-        hub = hardwareMap.get(ExpansionHubEx.class, "358-Hub-10");
+        hub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub A");
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -80,7 +81,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 //        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-//        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
     @Override

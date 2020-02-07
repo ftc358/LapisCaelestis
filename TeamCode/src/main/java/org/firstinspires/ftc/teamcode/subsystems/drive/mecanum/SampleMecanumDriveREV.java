@@ -22,7 +22,7 @@ import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.get
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware. If your hardware configuration
- * satisfies the requirements, SampleMecanumDriveREVOptimized is highly recommended.
+ * satisfies the requirements, MecanumDriveREVOptimized is highly recommended.
  */
 public class SampleMecanumDriveREV extends SampleMecanumDriveBase {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;

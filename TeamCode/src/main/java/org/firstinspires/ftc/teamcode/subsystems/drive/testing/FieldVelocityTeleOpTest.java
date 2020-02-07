@@ -8,7 +8,7 @@ import com.acmerobotics.roadrunner.kinematics.Kinematics;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 
 import static org.firstinspires.ftc.teamcode.subsystems.drive.testing.FieldVelocityTeleOpTest.CONTROL_MODE.ABSOLUTE;
 import static org.firstinspires.ftc.teamcode.subsystems.drive.testing.FieldVelocityTeleOpTest.CONTROL_MODE.RELATIVE;
@@ -39,7 +39,7 @@ public class FieldVelocityTeleOpTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDriveREVOptimized drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        MecanumDriveREVOptimized drive = new MecanumDriveREVOptimized(hardwareMap);
 
         waitForStart();
 

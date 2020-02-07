@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
@@ -80,7 +80,7 @@ public class LocalizationTestWithCamera extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDriveREVOptimized drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        MecanumDriveREVOptimized drive = new MecanumDriveREVOptimized(hardwareMap);
 
         drive.setPoseEstimate(new Pose2d(0, 0, 0));
 
