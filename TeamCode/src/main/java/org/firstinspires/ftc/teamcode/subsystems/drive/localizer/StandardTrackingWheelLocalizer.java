@@ -37,9 +37,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.94488; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-//    public static double LATERAL_DISTANCE = 16.75; // in; distance between the left and right wheels
-    // we are not using it
-//    public static double FORWARD_OFFSET = 8.00; // in; offset of the lateral wheel
+    public static double LATERAL_DISTANCE = 7.585;
 
     private ExpansionHubEx hub;
 
@@ -47,9 +45,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
-                new Pose2d(0, 7.835, 0), // left
-                new Pose2d(0, -7.835, 0), // right
-                new Pose2d(-7.835, 1.378, Math.toRadians(90)) // back
+                new Pose2d(0, LATERAL_DISTANCE, 0), // left
+                new Pose2d(0, -LATERAL_DISTANCE, 0), // right
+                new Pose2d(-LATERAL_DISTANCE, 1.378, Math.toRadians(90)) // back
         ));
 
         hub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub B");

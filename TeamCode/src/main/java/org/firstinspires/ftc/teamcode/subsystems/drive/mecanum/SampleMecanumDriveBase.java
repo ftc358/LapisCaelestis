@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.drive.mecanum;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
@@ -21,7 +22,6 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
-import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TelemetryUtil;
 
 import java.util.ArrayList;
@@ -41,10 +41,10 @@ import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.kV;
 @Config
 public abstract class SampleMecanumDriveBase extends MecanumDrive implements Subsystem {
     //    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0.5, 0, 0.0098);
-    public static PIDCoefficients TRANSLATIONAL_PID_X = new PIDCoefficients(5, 0, 0.1);
+    public static PIDCoefficients TRANSLATIONAL_PID_X = new PIDCoefficients(5, 0, 0.2);
     public static PIDCoefficients TRANSLATIONAL_PID_Y = new PIDCoefficients(5, 0, 0.1);
     //    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0.001, 0, 0.01);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0.05);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0.2);
 
 
     public enum Mode {
@@ -177,18 +177,18 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
             case FOLLOW_TRAJECTORY: {
                 setDriveSignal(follower.update(currentPose));
 
-                Trajectory trajectory = follower.getTrajectory();
-
-                fieldOverlay.setStrokeWidth(1);
-                fieldOverlay.setStroke("4CAF50");
-                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.getPath());
-
-                fieldOverlay.setStroke("#F44336");
-                double t = follower.elapsedTime();
-                DashboardUtil.drawRobot(fieldOverlay, trajectory.get(t));
-
-                fieldOverlay.setStroke("#3F51B5");
-                fieldOverlay.fillCircle(currentPose.getX(), currentPose.getY(), 3);
+//                Trajectory trajectory = follower.getTrajectory();
+//
+//                fieldOverlay.setStrokeWidth(1);
+//                fieldOverlay.setStroke("4CAF50");
+//                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.getPath());
+//
+//                fieldOverlay.setStroke("#F44336");
+//                double t = follower.elapsedTime();
+//                DashboardUtil.drawRobot(fieldOverlay, trajectory.get(t));
+//
+//                fieldOverlay.setStroke("#3F51B5");
+//                fieldOverlay.fillCircle(currentPose.getX(), currentPose.getY(), 3);
 
                 if (!follower.isFollowing()) {
                     mode = Mode.IDLE;
@@ -197,6 +197,11 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive implements Sub
                 break;
             }
         }
+
+        //TODO: remove this
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.putAll(TelemetryUtil.objectToMap(telemetryData));
+        dashboard.sendTelemetryPacket(packet);
 
         return TelemetryUtil.objectToMap(telemetryData);
     }
