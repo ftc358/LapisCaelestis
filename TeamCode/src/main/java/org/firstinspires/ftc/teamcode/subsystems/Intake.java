@@ -33,9 +33,8 @@ public class Intake implements Subsystem {
 
     public Intake(HardwareMap map) {
         telemetryData = new TelemetryData();
-        leftMotor = new CachingDcMotor(map.dcMotor.get("leftIntakeMotor"));
-        rightMotor = new CachingDcMotor(map.dcMotor.get("rightIntakeMotor"));
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotor = new CachingDcMotor(map.dcMotor.get("leftEncoder-rightIntake"));
+        rightMotor = new CachingDcMotor(map.dcMotor.get("rightEncoder-leftIntake"));
     }
 
     public void setPower(double power, IntakeMode mode) {

@@ -53,7 +53,7 @@ public class Lift implements Subsystem {
     private double currentVel;
     private double targetVel;
 
-    private TelemetryData telemetryData;
+    public TelemetryData telemetryData;
     private RevBulkData hubData;
 
     public enum LiftMode {
@@ -63,7 +63,7 @@ public class Lift implements Subsystem {
 
     public LiftMode mode;
 
-    private class TelemetryData {
+    public class TelemetryData {
         public double LiftCurrentPosition;
         public double LiftTargetPosition;
         public double LiftCurrentVel;
@@ -108,6 +108,7 @@ public class Lift implements Subsystem {
             return 0.0;
         }
         return encoderTicksToInches(hubData.getMotorCurrentPosition(encoderMotor));
+//        return encoderTicksToInches(hubData.getMotorCurrentPosition(encoderMotor));
     }
 
     public double getLiftVelocity() {
@@ -115,6 +116,7 @@ public class Lift implements Subsystem {
             return 0.0;
         }
         return encoderTicksToInches(hubData.getMotorVelocity(encoderMotor));
+//        return encoderTicksToInches(hubData.getMotorVelocity(encoderMotor));
     }
 
     private void resetEncoder() {
@@ -126,12 +128,16 @@ public class Lift implements Subsystem {
         return clock.seconds() - startTime;
     }
 
+    public boolean isBusy() {
+        return mode != LiftMode.IDLE;
+    }
+
     public MotionProfile generateLiftMotionProfile(MotionState start, MotionState end) {
         return MotionProfileGenerator.generateSimpleMotionProfile(start, end, MAX_VEL, MAX_ACC, MAX_JERK, false);
     }
 
     public void waitForIdle() {
-        while (!Thread.currentThread().isInterrupted() && mode != LiftMode.IDLE) {
+        while (!Thread.currentThread().isInterrupted() && isBusy()) {
             try {
                 Thread.sleep(5);
             } catch (InterruptedException e) {

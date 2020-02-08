@@ -65,7 +65,6 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
                         expansionHubBData = expansionHubB.getBulkInputData();
                         Map<String, Object> telemetry = subsystem.update(telemetryPacket.fieldOverlay());
                         telemetryPacket.putAll(telemetry);
-                        subsystem.update(null);
                         synchronized (subsystemsWithProblems) {
                             if (subsystemsWithProblems.contains(subsystem)) {
                                 subsystemsWithProblems.remove(subsystem);

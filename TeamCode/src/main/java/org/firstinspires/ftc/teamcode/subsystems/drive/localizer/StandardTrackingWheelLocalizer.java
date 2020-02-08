@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.RevBulkData;
 
@@ -39,7 +40,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     public static double LATERAL_DISTANCE = 7.585;
 
-    private ExpansionHubEx hub;
+//    private ExpansionHubEx hub;
 
     private DcMotor leftEncoder, rightEncoder, backEncoder;
 
@@ -50,12 +51,12 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
                 new Pose2d(-LATERAL_DISTANCE, 1.378, Math.toRadians(90)) // back
         ));
 
-        hub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub B");
+//        hub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub B");
 
         leftEncoder = hardwareMap.dcMotor.get("leftEncoder-rightIntake");
         rightEncoder = hardwareMap.dcMotor.get("rightEncoder-leftIntake");
         backEncoder = hardwareMap.dcMotor.get("backEncoder");
-        leftEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         backEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -66,15 +67,15 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
-        RevBulkData bulkData = hub.getBulkInputData();
+        RevBulkData bulkData = Robot.expansionHubBData;
 
         if (bulkData == null) {
             return Arrays.asList(0.0, 0.0, 0.0, 0.0);
         }
 
         List<Double> wheelPositions = new ArrayList<>();
-        wheelPositions.add(encoderTicksToInches(bulkData.getMotorCurrentPosition(leftEncoder)));
-        wheelPositions.add(encoderTicksToInches(bulkData.getMotorCurrentPosition(rightEncoder)));
+        wheelPositions.add(-encoderTicksToInches(bulkData.getMotorCurrentPosition(leftEncoder)));
+        wheelPositions.add(-encoderTicksToInches(bulkData.getMotorCurrentPosition(rightEncoder)));
         wheelPositions.add(encoderTicksToInches(bulkData.getMotorCurrentPosition(backEncoder)));
 
         return wheelPositions;

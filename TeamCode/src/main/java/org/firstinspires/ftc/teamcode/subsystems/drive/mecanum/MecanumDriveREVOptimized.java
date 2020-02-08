@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
@@ -32,7 +33,7 @@ import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.get
  * trajectory following performance with moderate additional complexity.
  */
 public class MecanumDriveREVOptimized extends SampleMecanumDriveBase {
-    private ExpansionHubEx hub;
+//    private ExpansionHubEx hub;
     private ExpansionHubMotor leftFront, leftRear, rightRear, rightFront;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
@@ -45,7 +46,7 @@ public class MecanumDriveREVOptimized extends SampleMecanumDriveBase {
         // TODO: adjust the names of the following hardware devices to match your configuration
         // for simplicity, we assume that the desired IMU and drive motors are on the same hub
         // if your motors are split between hubs, **you will need to add another bulk read**
-        hub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub A");
+//        hub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub A");
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -102,7 +103,7 @@ public class MecanumDriveREVOptimized extends SampleMecanumDriveBase {
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
-        RevBulkData bulkData = hub.getBulkInputData();
+        RevBulkData bulkData = Robot.expansionHubAData;
 
         if (bulkData == null) {
             return Arrays.asList(0.0, 0.0, 0.0, 0.0);
@@ -117,7 +118,7 @@ public class MecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public List<Double> getWheelVelocities() {
-        RevBulkData bulkData = hub.getBulkInputData();
+        RevBulkData bulkData = Robot.expansionHubAData;
 
         if (bulkData == null) {
             return Arrays.asList(0.0, 0.0, 0.0, 0.0);

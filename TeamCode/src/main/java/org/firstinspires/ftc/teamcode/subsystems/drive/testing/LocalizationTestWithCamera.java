@@ -43,14 +43,13 @@ public class LocalizationTestWithCamera extends LinearOpMode {
     final private static int frameHeight = 320;
     final private static int frameWidth = 240;
 
-    public static int fromBottom = 20;
-    public static int stoneHeight = 60;
+    public static int xPos = 85;
+    public static int yPos = 90;
 
-    Servo foundationGrabber;
-    Servo grabberWrist;
-    Servo grabberHand;
+    public static int stoneWidth = 30;
+    public static int stoneHeight = 62;
 
-    double foundationGrabberState;
+    public int stonePosition;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -70,13 +69,6 @@ public class LocalizationTestWithCamera extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        grabberWrist = hardwareMap.servo.get("grabberWrist");
-        grabberHand = hardwareMap.servo.get("grabberHand");
-        foundationGrabber = hardwareMap.servo.get("foundationGrabber");
-
-        grabberWrist.setPosition(0.7);
-        grabberHand.setPosition(0);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -108,19 +100,13 @@ public class LocalizationTestWithCamera extends LinearOpMode {
 
             drive.update(null);
 
-            if (gamepad1.left_bumper) {
-                foundationGrabberState = 0;
-            } else if (gamepad1.right_bumper) {
-                foundationGrabberState = 1;
-            }
-
-            foundationGrabber.setPosition(foundationGrabberState);
+            stonePosition = pipeline.getPosition();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.addData("skystonePosition", pipeline.getPosition());
+            telemetry.addData("skystonePosition", stonePosition);
             telemetry.update();
 
             networking.submit(submitImage);
@@ -133,9 +119,9 @@ public class LocalizationTestWithCamera extends LinearOpMode {
         Scalar green = new Scalar(0, 0, 255);
 
         // defining stone detection zones
-        Rect rectLeft = new Rect(fromBottom, 0, stoneHeight, frameHeight / 3);
-        Rect rectMiddle = new Rect(fromBottom, frameHeight / 3, stoneHeight, frameHeight / 3);
-        Rect rectRight = new Rect(fromBottom, 2 * frameHeight / 3, stoneHeight, frameHeight / 3);
+        Rect rectLeft = new Rect(yPos, xPos, stoneHeight, stoneWidth);
+        Rect rectMiddle = new Rect(yPos, xPos + stoneWidth, stoneHeight, stoneWidth);
+        Rect rectRight = new Rect(yPos, xPos + 2 * stoneWidth, stoneHeight, stoneWidth);
 
         @Override
         public Mat processFrame(Mat input) {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
@@ -15,22 +16,42 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AutoOpmode extends LinearOpMode {
+public abstract class AutoOpmode extends LinearOpMode {
 
-    private Robot robot;
+    protected Robot robot;
 
     // CV
 
-    OpenCvCamera phoneCam;
-    SkystonePipeline skystonePipeline;
+    protected OpenCvCamera phoneCam;
+    protected SkystonePipeline skystonePipeline;
 
     // consts
 
     final private static int frameHeight = 320;
     final private static int frameWidth = 240;
 
-    final private static int fromBottom = 20;
-    final private static int stoneHeight = 60;
+    public static int xPos = 85;
+    public static int yPos = 90;
+
+    public static int stoneWidth = 30;
+    public static int stoneHeight = 62;
+
+
+    // states
+
+    protected Pose2d initialPose;
+
+    public enum StonePosition {
+        LEFT,
+        MIDDLE,
+        RIGHT
+    }
+
+    public StonePosition stonePosition;
+
+    protected abstract void setup();
+
+    protected abstract void run();
 
     @Override
     public final void runOpMode() throws InterruptedException {
@@ -43,18 +64,27 @@ public class AutoOpmode extends LinearOpMode {
         skystonePipeline = new SkystonePipeline();
         phoneCam.setPipeline(skystonePipeline);
         phoneCam.startStreaming(frameHeight, frameWidth, OpenCvCameraRotation.UPRIGHT);
+
+        setup();
+
+        waitForStart();
+
+        if (isStopRequested()) {
+            return;
+        }
+
+        run();
     }
 
-    public class SkystonePipeline extends OpenCvPipeline {
+    protected class SkystonePipeline extends OpenCvPipeline {
 
         private int skystonePosition;
-
-        final private static int rectHeight = frameHeight / 3;
+        Scalar green = new Scalar(0, 0, 255);
 
         // defining stone detection zones
-        Rect rectLeft = new Rect(fromBottom, 0, stoneHeight, rectHeight);
-        Rect rectMiddle = new Rect(fromBottom, rectHeight, stoneHeight, rectHeight);
-        Rect rectRight = new Rect(fromBottom, 2 * rectHeight, stoneHeight, rectHeight);
+        Rect rectLeft = new Rect(yPos, xPos, stoneHeight, stoneWidth);
+        Rect rectMiddle = new Rect(yPos, xPos + stoneWidth, stoneHeight, stoneWidth);
+        Rect rectRight = new Rect(yPos, xPos + 2 * stoneWidth, stoneHeight, stoneWidth);
 
         @Override
         public Mat processFrame(Mat input) {
@@ -67,6 +97,7 @@ public class AutoOpmode extends LinearOpMode {
             double middleValue = getValue(Core.mean(middle));
             double rightValue = getValue(Core.mean(right));
 
+            // make an arrayList with the values of the 3 blocks for easier comparison
             ArrayList<Double> values = new ArrayList<>();
             values.add(leftValue);
             values.add(middleValue);
@@ -77,8 +108,21 @@ public class AutoOpmode extends LinearOpMode {
             return input;
         }
 
-        protected int getPosition() {
-            return skystonePosition;
+        public StonePosition getPosition() {
+            switch (skystonePosition) {
+                case 0: {
+                    return StonePosition.LEFT;
+                }
+                case 1: {
+                    return StonePosition.MIDDLE;
+                }
+                case 2: {
+                    return StonePosition.MIDDLE.RIGHT;
+                }
+                default: {
+                    return StonePosition.LEFT;
+                }
+            }
         }
 
         private double getValue(Scalar scalar) {
@@ -92,5 +136,6 @@ public class AutoOpmode extends LinearOpMode {
 
             return max;
         }
+
     }
 }

@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizer.StandardTrackingWheelLocalizer;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
@@ -20,15 +22,6 @@ public class RobotDiagnostics extends OpMode {
     public void init() {
         robot = new Robot(this);
         robot.start();
-
-        leftFront = hardwareMap.get(ExpansionHubMotor.class, "leftFront");
-        leftRear = hardwareMap.get(ExpansionHubMotor.class, "leftRear");
-        rightRear = hardwareMap.get(ExpansionHubMotor.class, "rightRear");
-        rightFront = hardwareMap.get(ExpansionHubMotor.class, "rightFront");
-
-        leftEncoder = hardwareMap.dcMotor.get("leftEncoder-rightIntake");
-        rightEncoder = hardwareMap.dcMotor.get("rightEncoder-leftIntake");
-        backEncoder = hardwareMap.dcMotor.get("backEncoder");
     }
 
     @Override
@@ -36,13 +29,22 @@ public class RobotDiagnostics extends OpMode {
         expansionHubAData = Robot.expansionHubAData;
         expansionHubBData = Robot.expansionHubAData;
 
-        telemetry.addData("Hub A, leftFront", expansionHubAData.getMotorCurrentPosition(leftFront));
-        telemetry.addData("Hub A, leftRear", expansionHubAData.getMotorCurrentPosition(leftRear));
-        telemetry.addData("Hub A, rightFront", expansionHubAData.getMotorCurrentPosition(rightFront));
-        telemetry.addData("Hub A, rightRear", expansionHubAData.getMotorCurrentPosition(rightRear));
+        robot.drive.setDrivePower(new Pose2d(
+                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x
+        ));
 
-        telemetry.addData("Hub B, leftEncoder-rightIntake", expansionHubBData.getMotorCurrentPosition(leftEncoder));
-        telemetry.addData("Hub B, rightEncoder-leftIntake", expansionHubBData.getMotorCurrentPosition(rightEncoder));
-        telemetry.addData("Hub B, backEncoder", expansionHubBData.getMotorCurrentPosition(backEncoder));
+        robot.drive.update(null);
+
+        Pose2d poseEstimate = robot.drive.getPoseEstimate();
+        StandardTrackingWheelLocalizer localizer = (StandardTrackingWheelLocalizer) robot.drive.getLocalizer();
+        telemetry.addData("x", poseEstimate.getX());
+        telemetry.addData("y", poseEstimate.getY());
+        telemetry.addData("heading", poseEstimate.getHeading());
+        telemetry.addData("leftEncoder", localizer.getWheelPositions().get(0));
+        telemetry.addData("rightEncoder", localizer.getWheelPositions().get(1));
+        telemetry.addData("backEncoder", localizer.getWheelPositions().get(2));
+        telemetry.update();
     }
 }
