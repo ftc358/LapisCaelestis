@@ -33,8 +33,8 @@ public abstract class AutoOpmode extends LinearOpMode {
     public static int xPos = 85;
     public static int yPos = 90;
 
-    public static int stoneWidth = 30;
-    public static int stoneHeight = 62;
+    public static int stoneWidth = 62;
+    public static int stoneHeight = 30;
 
 
     // states
@@ -58,12 +58,12 @@ public abstract class AutoOpmode extends LinearOpMode {
         robot = new Robot(this);
         robot.start();
 
-        phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK);
-        phoneCam.openCameraDevice();
-
-        skystonePipeline = new SkystonePipeline();
-        phoneCam.setPipeline(skystonePipeline);
-        phoneCam.startStreaming(frameHeight, frameWidth, OpenCvCameraRotation.UPRIGHT);
+//        phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK);
+//        phoneCam.openCameraDevice();
+//
+//        skystonePipeline = new SkystonePipeline();
+//        phoneCam.setPipeline(skystonePipeline);
+//        phoneCam.startStreaming(frameHeight, frameWidth, OpenCvCameraRotation.UPRIGHT);
 
         setup();
 

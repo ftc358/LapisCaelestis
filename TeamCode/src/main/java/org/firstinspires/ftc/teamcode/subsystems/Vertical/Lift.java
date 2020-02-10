@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.lift;
+package org.firstinspires.ftc.teamcode.subsystems.Vertical;
 
 import android.support.annotation.Nullable;
 
@@ -23,15 +23,15 @@ import org.openftc.revextensions2.RevBulkData;
 import java.util.Map;
 
 import static org.firstinspires.ftc.teamcode.subsystems.drive.DriveConstants.getMotorVelocityF;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.LIFT_CONTROLLER_PID;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.MAX_ACC;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.MAX_JERK;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.kA;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.subsystems.lift.LiftConstants.kV;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.LIFT_CONTROLLER_PID;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.MAX_ACC;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.MAX_JERK;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.kA;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftConstants.kV;
 
 public class Lift implements Subsystem {
 

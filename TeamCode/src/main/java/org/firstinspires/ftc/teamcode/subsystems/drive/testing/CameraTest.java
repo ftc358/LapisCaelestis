@@ -6,9 +6,11 @@ import android.util.Log;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
@@ -26,20 +28,32 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * This is a simple teleop routine for testing localization. Drive the robot around like a normal
+ * teleop routine and make sure the robot's estimated pose matches the robot's actual pose (slight
+ * errors are not out of the ordinary, especially with sudden drive motions). The goal of this
+ * exercise is to ascertain whether the localizer has been configured properly (note: the pure
+ * encoder localizer heading may be significantly off if the track width has not been tuned).
+ */
 @Config
-@TeleOp
+@TeleOp(group = "drive")
 public class CameraTest extends LinearOpMode {
 
     final private static int frameHeight = 320;
     final private static int frameWidth = 240;
 
-    public static int fromBottom = 5;
-    public static int stoneHeight = 40;
+    public static int xPos = 85;
+    public static int yPos = 90;
+
+    public static int stoneWidth = 62;
+    public static int stoneHeight = 30;
+
+    public int stonePosition;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
     OpenCvCamera phoneCam;
-    SamplePipeline samplePipeline;
+    SamplePipeline pipeline;
 
     // comment out later
     Bitmap bmp = null;
@@ -53,29 +67,33 @@ public class CameraTest extends LinearOpMode {
     };
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
 
         phoneCam.openCameraDevice();
-        samplePipeline = new SamplePipeline();
-        phoneCam.setPipeline(samplePipeline);
+        pipeline = new SamplePipeline();
+        phoneCam.setPipeline(pipeline);
 
         // comment out later
         ExecutorService networking = Executors.newSingleThreadExecutor();
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         phoneCam.startStreaming(frameHeight, frameWidth, OpenCvCameraRotation.UPRIGHT);
 
         waitForStart();
 
-        while (opModeIsActive()) {
-            // comment out later
-            networking.submit(submitImage);
+        while (!isStopRequested()) {
 
-            telemetry.addData("skystonePosition", samplePipeline.getPosition());
+            stonePosition = pipeline.getPosition();
+
+            telemetry.addData("skystonePosition", stonePosition);
             telemetry.update();
+
+            networking.submit(submitImage);
         }
     }
 
@@ -85,9 +103,9 @@ public class CameraTest extends LinearOpMode {
         Scalar green = new Scalar(0, 0, 255);
 
         // defining stone detection zones
-        Rect rectLeft = new Rect(fromBottom, 0, stoneHeight, frameHeight / 3);
-        Rect rectMiddle = new Rect(fromBottom, frameHeight / 3, stoneHeight, frameHeight / 3);
-        Rect rectRight = new Rect(fromBottom, 2 * frameHeight / 3, stoneHeight, frameHeight / 3);
+        Rect rectLeft = new Rect(yPos, xPos, stoneHeight, stoneWidth);
+        Rect rectMiddle = new Rect(yPos, xPos + stoneWidth, stoneHeight, stoneWidth);
+        Rect rectRight = new Rect(yPos, xPos + 2 * stoneWidth, stoneHeight, stoneWidth);
 
         @Override
         public Mat processFrame(Mat input) {

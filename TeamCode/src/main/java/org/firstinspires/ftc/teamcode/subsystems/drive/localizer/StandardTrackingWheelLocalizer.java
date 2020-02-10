@@ -70,7 +70,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         RevBulkData bulkData = Robot.expansionHubBData;
 
         if (bulkData == null) {
-            return Arrays.asList(0.0, 0.0, 0.0, 0.0);
+            return Arrays.asList(0.0, 0.0, 0.0);
         }
 
         List<Double> wheelPositions = new ArrayList<>();

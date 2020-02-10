@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.lift;
+package org.firstinspires.ftc.teamcode.subsystems.Vertical;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;

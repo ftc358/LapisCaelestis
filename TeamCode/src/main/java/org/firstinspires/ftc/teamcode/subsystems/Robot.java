@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
+import org.firstinspires.ftc.teamcode.subsystems.Vertical.HorizontalFeeder;
+import org.firstinspires.ftc.teamcode.subsystems.Vertical.LiftSimple;
 import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.RevBulkData;
@@ -36,7 +38,9 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
 
     public MecanumDriveREVOptimized drive;
     public Intake intake;
-//    public Lift lift;
+    public FoundationGrabber foundationGrabber;
+    public LiftSimple lift;
+    public HorizontalFeeder horizontalFeeder;
 
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
@@ -143,12 +147,29 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
             Log.w(TAG, "skipping drive");
         }
 
-//        try {
-//            lift = new Lift(opMode.hardwareMap);
-//            subsystems.add(lift);
-//        } catch (IllegalArgumentException e) {
-//            Log.w(TAG, "skipping lift");
-//        }
+        try {
+            foundationGrabber = new FoundationGrabber(opMode.hardwareMap);
+            subsystems.add(foundationGrabber);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, e);
+            Log.w(TAG, "skipping foundationGrabber");
+        }
+
+        try {
+            lift = new LiftSimple(opMode.hardwareMap);
+            subsystems.add(lift);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, e);
+            Log.w(TAG, "skipping lift simple");
+        }
+
+        try {
+            horizontalFeeder = new HorizontalFeeder(opMode.hardwareMap);
+            subsystems.add(horizontalFeeder);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, e);
+            Log.w(TAG, "skipping horizaontal feeder");
+        }
 
         Activity activity = (Activity) opMode.hardwareMap.appContext;
         opModeManager = OpModeManagerImpl.getOpModeManagerOfActivity(activity);

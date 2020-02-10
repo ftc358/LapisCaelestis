@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOptimized;
 
 /*
@@ -14,25 +15,28 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.mecanum.MecanumDriveREVOp
 @Config
 @Autonomous(group = "drive")
 public class FollowerPIDTuner extends LinearOpMode {
+    private Robot robot;
     public static double DISTANCE = 30;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDriveREVOptimized drive = new MecanumDriveREVOptimized(hardwareMap);
 
-        drive.setPoseEstimate(new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0));
+        robot = new Robot(this);
+        robot.start();
+
+        robot.drive.setPoseEstimate(new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0));
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (!isStopRequested()) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
+            robot.drive.followTrajectorySync(
+                    robot.drive.trajectoryBuilder()
                             .forward(DISTANCE)
                             .build()
             );
-            drive.turnSync(Math.toRadians(90));
+            robot.drive.turnSync(Math.toRadians(90));
         }
     }
 }
